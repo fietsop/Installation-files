@@ -1,0 +1,51 @@
+Download the tomcat installation package
+sudo wget https://dlcdn.apache.org/tomcat/tomcat-10/v10.1.11/bin/apache-tomcat-10.1.11.zip
+
+
+Extract the downloaded package
+unzip *.zip
+
+
+Remove the zip file
+rm -rf *.zip
+
+
+Rename the extracted folder
+mv apache-tomcat-10.1.9/ tomcat
+
+
+Install Java
+sudo yum install java -y
+
+
+Create soft links for startup and shutdown scripts
+sudo ln -s /home/ec2-user/tomcat/bin/startup.sh /usr/local/bin/tomcatup
+sudo ln -s /home/ec2-user/tomcat/bin/shutdown.sh /usr/local/bin/tomcatdown
+
+
+Make the scripts in the tomcat bin directory executable
+cd tomcat/bin
+chmod u+x *.sh
+
+
+To change the default port from 8080 to port 8090, open the server.xml file located in /tomcat10/conf/. Locate the connector port and change it from 8080 to 8090. Save the changes.
+
+Disable security restrictions in the manager app and host-manager app by commenting out the Valve className properties in tomcat/webapps/manager/META-INF/context.xml and tomcat/webapps/host-manager/META-INF/context.xml. Both properties should look like this after you comment them out. 
+<!--<Valve className="org.apache.catalina.valves.RemoteAddrValve"
+               allow="127.\d+.\d+.\d+|::1|0:0:0:0:0:0:0:1" />-->
+
+
+Add a user to the tomcat user database by editing the tomcat-users.xml file located in /tomcat/conf/. Add the following lines just before the closing tomcat-users tag at the end of the file.
+<role rolename="manager-gui"/>
+<role rolename="manager-script"/>
+<role rolename="manager-jmx"/>
+<role rolename="manager-status"/>
+<user username="admin" password="admin" roles="manager-gui, manager-script, manager-jmx, manager-status"/>
+
+
+Start the tomcat web server
+tomcatup
+
+
+Access the web application server using: http://[public-ip]:8090.
+Click on the manager app and log in with username "admin" and password "admin".
